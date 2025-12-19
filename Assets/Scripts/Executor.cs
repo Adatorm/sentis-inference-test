@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 using TMPro;
 using Unity.InferenceEngine;
 using UnityEngine;
+using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
 public class Executor : MonoBehaviour
 {
     [SerializeField] private ModelAsset modelAsset;
     [SerializeField] private TMP_Text inferenceTimeText;
+    [SerializeField] private Button rerunButton;
     private Model _model;
     private bool _isInitialized = false;
     private bool _isRunning = false;
@@ -37,6 +39,7 @@ public class Executor : MonoBehaviour
         _inputTensor = new Tensor<float>(inputShape);
         
         _isInitialized = true;
+        rerunButton.interactable = false;
     }
 
     private void Update()
@@ -49,6 +52,8 @@ public class Executor : MonoBehaviour
                 // stop at max execution
                 _isCompleted = true;
                 DisplayTimes();
+
+                rerunButton.interactable = true;
                 return;
             }
             
@@ -102,6 +107,14 @@ public class Executor : MonoBehaviour
 
         }
         inferenceTimeText.text = ss.ToString();
+    }
+
+    public void ReRun()
+    {
+        _isCompleted = false;
+        rerunButton.interactable = false;
+        _executionCount = 0;
+        _inferenceTimes.Clear();
     }
     
     
